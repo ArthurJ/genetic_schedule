@@ -1,0 +1,8 @@
+/out
+.idea
+*.iml
+*~
+*.log
+*.tar.gz
+*metastore_db
+.ipynb_checkpoints
