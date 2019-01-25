@@ -6,3 +6,6 @@
 *.tar.gz
 *metastore_db
 .ipynb_checkpoints
+/Result*
+.vscode
+__pycache__
