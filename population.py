@@ -3,15 +3,18 @@ from copy import deepcopy as copy
 from secrets import choice
 from random import randint
 from itertools import combinations
+import logging
+from logging.config import dictConfig
 
 import numpy as np
 
 from tools import shuffle, chronometer
 from chromosome import Schedule
 
-
 __author__ = '@arthurj'
 
+
+logger = logging.getLogger()
 
 def merge(genes_parent_a, genes_parent_b):
     crosspoint = randint(1, len(genes_parent_a) - 1)
@@ -47,13 +50,13 @@ def sex(table, spots, candidates, couples):
             some_a = Schedule(table, spots, candidates, fit, penality, combined[0])
             offspring.add(some_a)
         except Exception as e:
-            if e.args[0] not in ('CRASH',):
+            if e.args[0] != 'CRASH':
                 raise e
         try:
             some_b = Schedule(table, spots, candidates, fit, penality, combined[1])
             offspring.add(some_b)
         except Exception as e:
-            if e.args[0] not in ('CRASH',):
+            if e.args[0] != 'CRASH':
                 raise e
     return offspring
 
@@ -69,7 +72,7 @@ def assex(chromosomes, table, spots, candidates):
                                 penality,
                                 shuffle(list(some.genes))))
         except Exception as e:
-            if e.args[0] not in ('CRASH',):
+            if e.args[0] != 'CRASH':
                 raise e
     return clones
 
@@ -161,7 +164,7 @@ class Population:
                 [new_chromosomes.update(proc.get()) for proc in procs]
                 break
             sleep(.027)
-        print(f'{len(new_chromosomes)} new subjects created successfully.')
+        logger.info(f'{len(new_chromosomes)} new subjects created successfully.')
 
         self.chromosomes = list()
         self.select(new_chromosomes)
@@ -169,10 +172,10 @@ class Population:
         return self
 
     def __str__(self):
-        s = f'Population size: {len(self.chromosomes)}.\n'
-        s += 'Best:{0:.2f}, Worst:{1:.2f}, Mean:{2:.2f}, Standard Deviantion:{3:.3f};\n'.format(
-            *self.statistics)
-        s += f'Best subject at current generation:\n{self.chromosomes[0]}'
+        s = f'\tPopulation size: {len(self.chromosomes)}.\n'
+        s += '\tBest:{0:.2f}, Worst:{1:.2f}, Mean:{2:.2f}, Standard Deviantion:{3:.3f};\n'\
+                .format(*self.statistics)
+        s += f'\tBest subject at current generation:\n{self.chromosomes[0]}'
         return s
 
     def __repr__(self):

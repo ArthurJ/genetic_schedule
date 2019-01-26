@@ -3,8 +3,12 @@ from secrets import choice
 from random import random
 from datetime import datetime
 
+import logging
+from logging.config import dictConfig
+
 import numpy as np
 
+logger = logging.getLogger()
 
 def shuffle(original_genes, prob=0.038):
     genes = list(original_genes)
@@ -20,7 +24,7 @@ def chronometer(func):
         t = datetime.now()
         res = func(*args)
         tempo = datetime.now() - t
-        print(f'Running time: {tempo}')
+        logger.info(f'Running time: {tempo}')
         return res
 
     return wrap
@@ -92,7 +96,7 @@ def report(chromosome, table, spots, candidates, spot_descr=None, f=sys.stdout):
                 if line in lines:
                     mean += table[line][col]
                     detail = f'(Line: {line});'
-                    if spot_descr:
+                    if spot_descr and spot_descr[line]:
                         detail = f'({spot_descr[line]});'
                     print(f'{inv_spot[lines]} {detail} satisfaction:'.ljust(49, '.'),
                             f'{table[line][col] * 10}%', 
