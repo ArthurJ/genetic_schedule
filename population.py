@@ -33,21 +33,28 @@ def merge(genes_parent_a, genes_parent_b):
     return tuple(genes_f[0]), tuple(genes_f[1])
 
 
+def fit(x):
+    return x
+
+def penality(x):
+    return 5*x
+
 def sex(table, spots, candidates, couples):
     offspring = set()
-    rejected_counter = 0
     for couple in couples:
         combined = merge(couple[0].genes, couple[1].genes)
         try:
-            some_a = Schedule(table, spots, candidates, combined[0])
+            some_a = Schedule(table, spots, candidates, fit, penality, combined[0])
             offspring.add(some_a)
-        except Exception:
-            rejected_counter += 1
+        except Exception as e:
+            if e.args[0] not in ('CRASH',):
+                raise e
         try:
-            some_b = Schedule(table, spots, candidates, combined[1])
+            some_b = Schedule(table, spots, candidates, fit, penality, combined[1])
             offspring.add(some_b)
-        except Exception:
-            rejected_counter += 1
+        except Exception as e:
+            if e.args[0] not in ('CRASH',):
+                raise e
     return offspring
 
 
@@ -58,10 +65,12 @@ def assex(chromosomes, table, spots, candidates):
             clones.add(Schedule(table,
                                 spots,
                                 candidates,
+                                fit, 
+                                penality,
                                 shuffle(list(some.genes))))
         except Exception as e:
-            
-            pass
+            if e.args[0] not in ('CRASH',):
+                raise e
     return clones
 
 
@@ -82,7 +91,7 @@ class Population:
 
         self.limits = dict([('max', max_cs_size),
                             ('min', int(max_cs_size * .3)),
-                            ('top', int(max_cs_size * .25))])
+                            ('top', int(max_cs_size * .05))])
 
         self.select(chromosomes)
 
@@ -91,7 +100,7 @@ class Population:
                 'The population could not overcome the retrictions.')
 
     def select(self, chromosomes):
-        cs = [copy(s) for s in chromosomes if s.fitness > 0]
+        cs = [copy(s) for s in chromosomes]
         cs.sort(reverse=True)
 
         set_cs = set(cs[:self.limits['min']])

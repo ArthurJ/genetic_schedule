@@ -49,9 +49,8 @@ def process_input(table):
     """
 
     spots_t = [[spot[0].split('!')[0], indice - 1]
-                  for indice, spot in enumerate(table)
-                  if spot[0] and not spot[0].startswith('!')]
-    print(spots_t)
+                    for indice, spot in enumerate(table)
+                    if spot[0] and not spot[0].startswith('!')]
     spots = dict()
     for i, spot_t in enumerate(spots_t):
         if i + 1 != len(spots_t):
@@ -61,8 +60,8 @@ def process_input(table):
         spots[spot_t[0]] = tuple(list(range(spot_t[1], final)))
 
     candidates_t = [[name, index - 1]
-                     for index, name in enumerate(table[0])
-                     if name]
+                        for index, name in enumerate(table[0])
+                        if name]
 
     candidates = dict()
     for i, name_t in enumerate(candidates_t):
@@ -73,7 +72,7 @@ def process_input(table):
         candidates[name_t[0]] = tuple(list(range(name_t[1], final)))
 
     table = np.array([[float(v) for v in value[1:] if v != '']
-                       for value in table[1:]])
+                        for value in table[1:]])
     return table, spots, candidates
 
 
@@ -95,7 +94,8 @@ def report(chromosome, table, spots, candidates, spot_descr=None, f=sys.stdout):
                     detail = f'(Line: {line});'
                     if spot_descr:
                         detail = f'({spot_descr[line]});'
-                    print(f'{inv_spot[lines]} {detail} satisfaction:\t{table[line][col] * 10}%', 
+                    print(f'{inv_spot[lines]} {detail} satisfaction:'.ljust(49, '.'),
+                            f'{table[line][col] * 10}%', 
                             file=f)
         mean /= len(cols)
         print(f"Subjects' mean satisfaction:\t{mean * 10:.1f}%\n", end='', file=f)

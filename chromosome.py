@@ -6,7 +6,7 @@ class Schedule:
     '''
 
     '''
-    def __init__(self, table, spots, candidates, genes=None):
+    def __init__(self, table, spots, candidates, fitness_func, fitness_penality_zero, genes=None):
         if not genes:
             genes = list(range(len(table)))
             genes = tuple(shuffle(genes, prob=.8))
@@ -17,6 +17,10 @@ class Schedule:
         self.fitness = 0
 
         self.zero_counter = 0
+
+        self.fitness_func = fitness_func
+        self.fitness_penality = fitness_penality_zero
+        
         self._evaluate_fitness(table)
     
     @classmethod
@@ -32,15 +36,16 @@ class Schedule:
                     return True
         return False
 
-    def _evaluate_fitness(self, table, penality_factor=5):
+
+    def _evaluate_fitness(self, table):
         fitness = 0
         penality_index = len(table)
         for i, j in enumerate(self.genes):
             if not table[i][j]:
                 self.zero_counter += 1
-                fitness -= penality_factor * penality_index
+                fitness -= self.fitness_penality(penality_index)
             else:
-                fitness += table[i][j]
+                fitness += self.fitness_func(table[i][j])
         self.fitness = fitness/len(table)
     
     def __le__(self, other):
